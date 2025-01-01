@@ -1,12 +1,13 @@
-# re module used for cleaning the text
-import re # module in Python provides a powerful set of functions for working with regular expressions (regex) 
+import re # re module is used for cleaning the text with regular expressions 
 
 
 # ----- FUNCTIONS ---------------------------------------------------------------------------------------------------------
 
 def clean_text(num):
     """
-    The function to chosing and cleaning the text
+    Cleans the text selected by the user, removing non-alphanumeric characters.
+    :param num: Index of the selected text (1, 2, or 3).
+    :return: Cleaned text.
     """
 
     TEXTS = ['''
@@ -37,7 +38,7 @@ def clean_text(num):
         garpike and stingray are also present.'''
      ]
     
-    # to clean the text from extra spaces, dots, commas, etc.
+        # to clean the text from extra spaces, dots, commas, etc.
     cleaned_text = re.sub(r'[^A-Za-z0-9\s]', '', TEXTS[num-1])
     #print(cleaned_text)
     
@@ -46,19 +47,20 @@ def clean_text(num):
 
 def valid_number_input():
     """
-    The function to check if the input from a user is correct within chosing a text to analyze
-
+    Prompts the user to input a valid number (1, 2, or 3).
+    If the input is invalid, it will continue prompting until a valid number is entered.
+    :return: Valid number selected by the user (1, 2, or 3).
     """
 
     while True:
         try:
-            # Prompt the user for input
+                # Prompt the user for input
             user_input = input("Enter a number btw. 1 and 3 to select: ")
             
-            # Try to convert the input to an integer
+                # Try to convert the input to an integer
             number = int(user_input)
             
-            # Check if the number is within the valid range
+                # Check if the number is within the valid range
             if number in (1, 2, 3):
                 #print(f"Valid number entered: {number}")
                 return number  # Exit the loop and return the valid number
@@ -71,10 +73,11 @@ def valid_number_input():
 
 def text_analyze(text: str):
     """
-    This is the main function of the script.
-    Here is the logic for counting main metrics within the given text and print them in defined structure.
+    Analyzes the given text by counting different word categories such as titlecase, uppercase, lowercase, and numeric words.
+    It also prints a summary of word length frequencies and numeric sum.
+    :param text: The cleaned text for analysis.
     
-    Example:
+    Example of output:
     There are 54 words in the selected text.
     There are 12 titlecase words.
     There are 1 uppercase words.
@@ -110,22 +113,23 @@ def text_analyze(text: str):
 
         # loop that passes through the cleaned words from the given text
     for word in words:
-            # first we will count words with the same lenght. Primary to be able get the highest count of words with the same lenght
-        if len(word) in word_count: word_count[len(word)] += 1
-        else: word_count[len(word)] = 1
-            # count of the words with the upper case first letter and the first letter is not numeric or special character 
-            # alternatively it is possilbe to check the whole word if it is a string "word.isalpha()"
+            # count words with the same lenght.
+        word_count[len(word)] = word_count.get(len(word), 0) + 1
+
+            # save the lenght of longest word in the text (to define the output table that will be printed)
+        longest_word = max(longest_word, len(word)) 
+
+            # count words with the first upper case letter and also is not a numeric or special character 
         if word[0].isupper() and word[0].isalpha(): 
             titlecase_word += 1
             # print(f"titlecase word: {word}")
 
-            # count of the words with all upper case letters and the the whole word does not contain number or special character
+            # count of the words with all upper case letters and the whole word does not contain a number or special character
         if word.isupper() and word.isalpha(): 
             uppercase_word += 1
             # print(f"uppercase word: {word}")
-
             
-            # count of the words with all lower case letters and the the whole word does not contain number or special character
+            # count of the words with all lower case letters and the whole word does not contain a number or special character
         if word.islower() and word.isalpha(): 
             lowercase_word += 1
             # print(f"lowercase word: {word}")
@@ -135,14 +139,12 @@ def text_analyze(text: str):
             num_count += 1
             num_sum += int(word)
 
-            # save the longest word in the text to define the output table that will be printed
-        if len(word) > longest_word: longest_word = len(word)            
-    
-    #this variable save the max lenght for the printing "*" according to the highest number of words with the same lenght
-    #and ensure the minimum lenght 12
-    max_lenght = max(word_count.values()) if max(word_count.values()) > 12 else 12
 
-        # printing the output with results
+        # Determine the maximum frequency for word lengths
+    max_length = max(word_count.values(), default=12)
+    max_length = max(max_length, 12)  # Ensure the minimum length is 12
+    
+        # print the analysis results
     print(f"There are {len(words)} words in the selected text.")
     print(f"There are {titlecase_word} titlecase words.")
     print(f"There are {uppercase_word} uppercase words.")
@@ -150,31 +152,27 @@ def text_analyze(text: str):
     print(f"There are {num_count} numeric strings.")
     print(f"The sum of all numbers {num_sum}")
     print(f"----------------------------------------")
-    print(f"{'LEN|':<4} {'OCCURENCES':^{max_lenght}} {'|NR.':<4}")
+    print(f"{'LEN|':<4} {'OCCURENCES':^{max_length}} {'|NR.':<4}")
     print(f"----------------------------------------")
     
-    # this loop ensure the printing layout for each lenght of words within the text
-    # alternatively we could use the sorted dict word_count for this.
+        # this loop ensure the printing of layout for each lenght of words within the text
     for i in range(1, longest_word + 1):
-        n = 0
-        print(f"{i:<3}|", end = "")
-        for j in words: 
-            if len(j) == i: 
-                n += 1
-                print(f"*", end = "")
-        print(f"{' ':<{max_lenght-n+2}}", end = "")
-        print(f"|{n:<3}")
-
+        n = word_count.get(i, 0)
+        print(f"{i:<3}|{'*' * n:<{max_length+2}}|{n:<3}")
+    
 
 def check_user(username, password) -> bool:
     """
     Verifies if the given username and password match the stored credentials.
+    :param username: The username input by the user.
+    :param password: The password input by the user.
+    :return: True if the username and password match, otherwise False.
     """
-    # Ensure inputs are strings
+        # Ensure inputs are strings
     username = str(username)
     password = str(password)
     
-    # Defined data of users - this should be check by unique test if it will be dynamic
+        # Defined data of users - should be check by unique test if this will be dynamic.
     data = {
         "bob"   :"123",
         "ann"   :"pass123",
@@ -182,18 +180,18 @@ def check_user(username, password) -> bool:
         "liz"   :"pass123" 
     }
 
-    if username in data: 
-        return data[username] == password
-    return False
+        # Check if the username exists and if the password matches
+    return data.get(username) == password
+
 
 # ----- MAIN ----------------------------------------------------------------------------------------------------------------
 
-# inputs from user to check the credentials
+    # inputs from user to check the credentials
 username = input("Enter your username: ")
 password = input("Enter your password: ")
-result = check_user(username,password)
+result = check_user(username, password)
 
-# output the results from user verification
+    # output the results from user verification
 if result: 
     print(f"----------------------------------------")
     print(f"Welcome to the app, {username}.")
@@ -202,5 +200,5 @@ if result:
     text_num = valid_number_input()
     print(f"----------------------------------------")
     text_analyze(clean_text(text_num))
-
-else: print(f"unregistered user, terminating the program..")
+else: 
+    print(f"unregistered user, terminating the program..")
