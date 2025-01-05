@@ -1,3 +1,10 @@
+"""
+projekt1_text_analyzer.py: první projekt do Engeto Online Akademie - Datový analytik s Pythonem
+author: Tomáš Pakosta
+email: tpakosta@gmail.com
+discord: Tom P. (tom.pa.costa) Tom#2303
+"""
+
 import re # re module is used for cleaning the text with regular expressions 
 
 
