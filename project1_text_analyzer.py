@@ -123,9 +123,6 @@ def text_analyze(text: str):
             # count words with the same lenght.
         word_count[len(word)] = word_count.get(len(word), 0) + 1
 
-            # save the lenght of longest word in the text (to define the output table that will be printed)
-        longest_word = max(longest_word, len(word)) 
-
             # count words with the first upper case letter and also is not a numeric or special character 
         if word[0].isupper() and word[0].isalpha(): 
             titlecase_word += 1
@@ -146,8 +143,9 @@ def text_analyze(text: str):
             num_count += 1
             num_sum += int(word)
 
-
-        # Determine the maximum frequency for word lengths
+        # save the lenght of longest word in the text (to define the output table that will be printed)
+    longest_word =  max(word_count.keys())
+          # Determine the maximum frequency for word lengths
     max_length = max(word_count.values(), default=12)
     max_length = max(max_length, 12)  # Ensure the minimum length is 12
     
