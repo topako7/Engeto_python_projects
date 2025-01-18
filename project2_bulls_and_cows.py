@@ -21,9 +21,7 @@ def generate_number():
     """
     items= [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     random.shuffle(items)
-    #print(items)
-    
-    random_number = digits[:4] if digits[0] != 0 else digits[1:5]
+    random_number = items[:4] if items[0] != 0 else items[1:5]
 
     return random_number
 
@@ -158,7 +156,6 @@ print(f"-----------------------------------------------")
 random_number = generate_number()
 print(f"I've generated a random 4 digit number for you.\nLet's play a bulls and cows game.")
 print(f"-----------------------------------------------")
-print(random_number)
 print(f"Enter a number:")
 print(f"-----------------------------------------------")
 user_number = valid_number_input() # Get the player's first guess
