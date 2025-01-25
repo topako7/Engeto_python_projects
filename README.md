@@ -6,7 +6,9 @@ Specific scripts are always processed separately for a given project.
 
 Each project has its own prefix, e.g. project number 1 is marked as project1_name, where "name" corresponds to the title of the given project.
 
-projects:
-1 - Text analyzer
-2 - Bulls & Cows or Tic-tac-toe
-3 - Election Scraper
+Projects:
+<ul>
+    <li>1 - Text analyzer</li>
+    <li>2 - Bulls & Cows or Tic-tac-toe</li>
+    <li>3 - Election Scraper</li>
+</ul>
