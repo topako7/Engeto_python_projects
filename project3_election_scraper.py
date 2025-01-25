@@ -3,6 +3,17 @@ projekt3_election_scraper.py: třetí projekt do Engeto Online Akademie - Datov�
 author: Tomáš Pakosta
 email: tpakosta@gmail.com
 discord: Tom P. (tom.pa.costa) Tom#2303
+
+examples of launching this script:
+1] Písek
+python project3_election_scraper.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=3&xnumnuts=3104" "election_data.csv"
+
+2] Plzeň-sever
+python project3_election_scraper.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=4&xnumnuts=3205" "election_data.csv"
+
+3] Praha
+python project3_election_scraper.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=1&xnumnuts=1100" "elections_praha.csv"
+
 """
 
 import sys
@@ -18,11 +29,11 @@ def main():
         sys.exit(1)
 
     # Retrieve the two parameters from the command-line arguments
-    #url = "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=4&xnumnuts=3205" #input parameter 1
-    #election_data = "election_data.csv" #input parameter 2
-        
     url = sys.argv[1]               # The URL of the district page (passed as the first argument)
     election_data = sys.argv[2]     # The name of the CSV file (passed as the second argument)
+
+    #url = "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=4&xnumnuts=3205" #input static parameter 1
+    #election_data = "election_data.csv" #input static parameter 2
 
     # Call scrape_district to get district codes, locations, and links
     codes, locations, links = scrape_district(url)
@@ -40,24 +51,6 @@ def main():
     # Write the results to the CSV file
     write_result(data_file, file_header, election_results)
 
-"""
-def find_base_url(url, url2):
-    parts = 0
-    response = 0
-    url_parts = url.split("/")
-    url_parts = ['/' if item == '' else item for item in url_parts]
-    base_url = url_parts[0]
-    
-    while response != 200:
-        parts += 1
-        base_url = base_url + "/" + url_parts[parts]
-        print(base_url+url2)
-        response = requests.get(base_url+url2)
-        response = response.status_code
-
-    print(base_url)
-    return base_url
-"""
     
 def scrape_district(url):
     """
@@ -101,7 +94,6 @@ def scrape_municipality(urls):
                election results per party, and CSV header fields.
     """
 
-
     file_header = []            # Initialize an empty list to store the header of the CSV file
     registered = []             # Initialize an empty list to store the number of registered voters
     envelopes = []              # Initialize an empty list to store the number of envelopes sent
@@ -109,8 +101,14 @@ def scrape_municipality(urls):
     votes_results = []          # Initialize an empty list to store the vote results for each party
 
     for link in urls:
-        text = requests.get(link)
-        soup_municipality = BeautifulSoup(text.text, 'html.parser') 
+        try:
+            text = requests.get(link)
+            text.raise_for_status()  # Raise an exception for invalid responses
+            soup_municipality = BeautifulSoup(text.text, 'html.parser')
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching the municipality page {link}: {e}")
+            continue
+        
         main_table = soup_municipality.find("table", {"id":"ps311_t1", "class": "table"})
         td_tags = main_table.find_all("td", {"class": "cislo", "data-rel":"L1"})
         registered.append(int(td_tags[0].get_text(strip=True).replace('\xa0','')))      #registered number
@@ -126,9 +124,9 @@ def scrape_municipality(urls):
         td_party_votes = div_votes.find_all("td", {"class": "cislo", "headers":"t1sa2 t1sb3"}) # Find all the table data cells containing party vote counts
         
         # Create a dictionary to store the votes for each party
-        votes = {}
-        for name, result in zip(td_party_name, td_party_votes):
-            votes[name.text.strip()] = int(result.text.strip())
+        #votes = {name.text.strip(): int(result.text.strip()) for name, result in zip(td_party_name, td_party_votes)}
+        votes = {name.text.strip(): int(result.get_text(strip=True).replace('\xa0','')) for name, result in zip(td_party_name, td_party_votes)}
+
         
         votes_results.append(votes)
     return registered, envelopes, valid, votes_results, file_header
@@ -153,8 +151,9 @@ def create_file(name, header):
     # Check if the file already exists and increment the version number if necessary
     while os.path.isfile(new_name):
         version += 1
-        new_name = name.split(".")[0] + "_" + str(version) + ".csv" # Modify the filename to create a new version
-    
+        new_name = f"{name.split('.')[0]}_{version}.csv" # Modify the filename to create a new version
+    if version > 0: print(f"File name already exists. The name of created file is {new_name}")
+    else: print(f"The {new_name} has been created.")
         # check if file already exists to prepare a fresh new file to prevent using existing file with different structure and data
     with open(new_name,
             mode="w",
@@ -169,27 +168,32 @@ def create_file(name, header):
 
 # Function to write the election results to the CSV file
 def write_result(file_csv, header, results):
-      
-    with open(file_csv,
-        mode="a",
-        encoding="UTF-8",
-        newline=""  # None
-    ) as file:   
+    """
+    Write the election results to the specified CSV file.
+
+    Args:
+        file_csv (str): The path to the CSV file.
+        header (list): The header row for the CSV file.
+        results (list): The election data (codes, locations, registered, envelopes, valid, votes).
+    """
+    
+    rows = []
+    for i in range(len(results[0])):
+        insert = [
+            results[0][i],  # Code
+            results[1][i],  # Location
+            results[2][i],  # Registered voters
+            results[3][i],  # Envelopes sent
+            results[4][i],  # Valid votes
+        ]
+        party_votes = results[5][i]
+        insert.extend([party_votes.get(vote, 0) for vote in header[5:]])  # Get vote counts for each party
+        rows.append(insert)
+
+    with open(file_csv, mode="a", encoding="UTF-8", newline="") as file:
         writer = csv.writer(file, delimiter=",")
-         # Loop through each row of results
-        for i in range(0, len(results[0])-1):
-            insert = []
-            insert.append(results[0][i])   # code
-            insert.append(results[1][i])   # location
-            insert.append(results[2][i])   # registered
-            insert.append(results[3][i])   # envelopes
-            insert.append(results[4][i])   # valid
-            dict = results[5][i]        # Get the dictionary of votes for each party
-            # Loop through each party in the header and add the corresponding vote count
-            for vote in header:                     
-                if vote in dict:
-                    insert.append(dict[vote])       # vote for the given party according to the header in the file
-            writer.writerow(insert)                 # Write the row to the CSV file
+        writer.writerows(rows)  # Write all rows at once
+    print(f"Data has been written into the file: {file_csv}")
 
 
 # ----- MAIN --------------------------------------------------------------------------------------------------------------
