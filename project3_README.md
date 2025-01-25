@@ -30,9 +30,11 @@ $ pip3 install -r requirements.txt
 ## How to Launch the Project/Script
 
 You need 2 arguments to launch the project from the command line:
+<ul>
+    <li>Argument 1: Link to the district</li>
+    <li>Argument 2: Name of the file to store the data</li>
+</ul>
 
-Argument 1: Link to the district
-Argument 2: Name of the file to store the data
 Example Command to Launch the Script
 
 ```bash
