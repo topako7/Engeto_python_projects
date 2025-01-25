@@ -64,7 +64,8 @@ def scrape_district(url):
     codes = list()                                                                              # Initialize an empty list to store district codes
     locations = list()                                                                          # Initialize an empty list to store location names
     links = list()                                                                              # Initialize an empty list to store links to the district pages
-
+    
+    print(f"Loading data of municipality codes, locations and links to the election details of municipalities...")
     html_text = requests.get(url)                                                   # load the html code
     soup_district = BeautifulSoup(html_text.text, 'html.parser')                              # html code + parser type
     #print(soup.prettify())
@@ -81,7 +82,8 @@ def scrape_district(url):
 
     for td in td_locations:
         locations.append(td.text.strip())                                                       # save the name of the location
-    
+    print(f"DONE")
+
     return codes, locations, links
 
 
@@ -100,6 +102,7 @@ def scrape_municipality(urls):
     valid = []                  # Initialize an empty list to store the number of valid votes
     votes_results = []          # Initialize an empty list to store the vote results for each party
 
+    print(f"Loading detailed data of each municipality codes...")
     for link in urls:
         try:
             text = requests.get(link)
@@ -129,6 +132,7 @@ def scrape_municipality(urls):
 
         
         votes_results.append(votes)
+    print(f"DONE")
     return registered, envelopes, valid, votes_results, file_header
 
 
