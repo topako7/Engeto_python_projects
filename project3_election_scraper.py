@@ -3,17 +3,6 @@ projekt3_election_scraper.py: třetí projekt do Engeto Online Akademie - Datov�
 author: Tomáš Pakosta
 email: tpakosta@gmail.com
 discord: Tom P. (tom.pa.costa) Tom#2303
-
-examples of launching this script:
-1] Písek
-python project3_election_scraper.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=3&xnumnuts=3104" "election_data.csv"
-
-2] Plzeň-sever
-python project3_election_scraper.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=4&xnumnuts=3205" "election_data.csv"
-
-3] Praha
-python project3_election_scraper.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=1&xnumnuts=1100" "elections_praha.csv"
-
 """
 
 import sys
@@ -23,6 +12,11 @@ import csv
 import os
 
 def main():
+    """
+    Main function that drives the scraping process, handling command-line arguments and calling 
+    the scraping functions for districts and municipalities. Writes the results to a CSV file.
+    """
+
     # Check if the correct number of arguments are provided (script name + 2 arguments)
     if len(sys.argv) != 3:
         print("Usage: python project3_election_scraper.py <param1 - link to any district from https://www.volby.cz/pls/ps2017nss/ps3?xjazyk=CZ> <param2 - filename.csv>")
@@ -32,8 +26,8 @@ def main():
     url = sys.argv[1]               # The URL of the district page (passed as the first argument)
     election_data = sys.argv[2]     # The name of the CSV file (passed as the second argument)
 
-    #url = "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=4&xnumnuts=3205" #input static parameter 1
-    #election_data = "election_data.csv" #input static parameter 2
+    #url = "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=4&xnumnuts=3205" #input static parameter 1 (test)
+    #election_data = "election_data.csv" #input static parameter 2 (test)
 
     # Call scrape_district to get district codes, locations, and links
     codes, locations, links = scrape_district(url)
@@ -66,15 +60,18 @@ def scrape_district(url):
     links = list()                                                                              # Initialize an empty list to store links to the district pages
     
     print(f"Loading data of municipality codes, locations and links to the election details of municipalities...")
-    html_text = requests.get(url)                                                   # load the html code
-    soup_district = BeautifulSoup(html_text.text, 'html.parser')                              # html code + parser type
+    
+    try:
+        html_text = requests.get(url)                                                 # load the html code
+        soup_district = BeautifulSoup(html_text.text, 'html.parser')                            # html code + parser type
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching the municipality page {url}: {e}")
+                               
     #print(soup.prettify())
     main_div = soup_district.find("div", {"id": "inner"})       # find the main part of the text to analyze
     td_tags = main_div.find_all("td", {"class": "cislo"})               # find td tags with class="cislo"
     td_locations = main_div.find_all("td", {"class": "overflow_name"})  # find td tags with class of the location name
     
-    #base_url = find_base_url(url, td_tags[0].find("a").get('href'))
-
     for td in td_tags:  
         a_tags = td.find("a")
         links.append(base_url + a_tags['href'])                                                 # save the link to the detail of votes
@@ -170,7 +167,6 @@ def create_file(name, header):
     return new_name
 
 
-# Function to write the election results to the CSV file
 def write_result(file_csv, header, results):
     """
     Write the election results to the specified CSV file.
@@ -188,7 +184,7 @@ def write_result(file_csv, header, results):
             results[1][i],  # Location
             results[2][i],  # Registered voters
             results[3][i],  # Envelopes sent
-            results[4][i],  # Valid votes
+            results[4][i],  # Valid votes/envelopes
         ]
         party_votes = results[5][i]
         insert.extend([party_votes.get(vote, 0) for vote in header[5:]])  # Get vote counts for each party
