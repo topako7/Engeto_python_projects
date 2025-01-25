@@ -35,7 +35,7 @@ You need 2 arguments to launch the project from the command line:
     <li>Argument 2: Name of the file to store the data</li>
 </ul>
 
-Example Command to Launch the Script
+Example command to launch the script
 
 ```bash
 python project3_election_scraper.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=4&xnumnuts=3205" "election_data.csv"
@@ -54,7 +54,7 @@ The file name already exists. The name of the created file is election_data_2.cs
 Data has been written into the file: election_data_2.csv
 ```
 
-Example Data in the File:
+Example data in the file:
 
 ```bash
 code,location,registered,envelopes,valid,Česká str.sociálně demokrat., ...
@@ -71,11 +71,7 @@ Example 1: Písek
 ```bash
 python project3_election_scraper.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=3&xnumnuts=3104" "election_data.csv"
 ```
-Example 2: Plzeň-sever
-```bash
-python project3_election_scraper.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=4&xnumnuts=3205" "election_data.csv"
-```
-Example 3: Praha
+Example 2: Praha
 ```bash
 python project3_election_scraper.py "https://www.volby.cz/pls/ps2017nss/ps32?xjazyk=CZ&xkraj=1&xnumnuts=1100" "elections_praha.csv"
 ```
