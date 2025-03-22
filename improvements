@@ -1,0 +1,52 @@
+Ahoj, tady Matouš Holinka, z Engeta. Nezlob se prosím, že se ke tvému třetímu projektu dostávám až nyní. 
+
+Strohé hodnocení neprogramátora: projekt jsi úspěšně splnil. Dělal přesně to, co zadání ukládá. Pojďme se ale spolu podívat ještě na nějaké detaily. Jako seniorní vývojář jsem tam zahlédl pár věcí, o kterých by bylo fajn si povědět.
+
+☝️sekce knihoven, řádek 8.  Začínáš importovat knihovny. V pořádku, ohlášení jsou na ůvodu souboru. Obvykle je ale řadíš nejprve standardní knihovny, následně knihovny třetích stran a finálně lokální moduly(víc na toto téma najdeš [1]). Případně já pracuji rád s knihovnou isort, seřadí vzorově za tebe:
+import os
+import sys
+import csv
+
+import requests
+from bs4 import BeautifulSoup
+
+
+☝️chybí 2 prázdné řádky, řádek 13. Pro lepší čitelnost se používají volné řádky. Dva volné řádky se dělají pouze před a po definici funkce (dokumentace [2]).
+
+☝️dlouhé řádky, řádek 22, 35, 38, .. . Maximální délka řádku by měla být 79 znaků (dokumenace [3]). Vždycky můžeš řádky elegantně zalamovat:
+print("Usage: python project3_election_scraper.py"
+      " <param1 - link to any district from https"
+      "://www.volby.cz/pls/ps2017nss/ps3?xjazyk="
+      "CZ> <param2 - filename.csv>")
+
+
+☝️velké množství nepotřebných komentářů. Spousta z nich je na bázi "toto dělá tamto" nebo nějaké debugovací ohlášení. To jsou poznámky pro tebe, ale v hotovém projektu nemají co dělat. Kód se stává méně pochopitelným, protože není čitelný.
+☝️funkce "scrape_district" dělá víc než jednu činnost, řádek 49. Tady to chce funkci ještě ideálně rozdělit. Funkce totiž: scrapuje obecně, parsuje odkazy, parsuje kódy, .. Každá funkce má mít na starost jednu činnost. Tak ať je přehledná, snadno popisovatelná a testovatelná.
+
+☝️komplikovaný datový typ, řádek 84. Ten tuple je zbytečně složitý. Uchopuješ potom hodnoty pomocí indexů, což jsou nic-neříkající celá čísla. Raději bych použil slovník, nebo nezměnitelný slovník namedtuple, abych mohl hodnoty uchopit pomocí klíče.
+
+☝️nejednotné docstrings. Někde používáš Google styl k psaní docstrings někde ne. Doporučuji sjednotit, ať to má tu správnou štábní kulturu.
+
+☝️chybí pokus raisnout status, řádek 66. Chytáš tu výjimku, kterou neraisuješ (v následující funkci to je dobře).
+
+☝️nestandardní řádkování, řádek 156, 157. Ohlášení se zapisují přehledně pod sebe na řádky. Neňahňat takhle za sebe. Navíc to máš jen tu, takže je takový unikát naskrz modulem.
+
+❗zkomolené workflow, řádek 165, 193. Vůbec se mi nelíbí tebou navrženou flow. Několikrát otevírat ten jeden a stejný soubor je zbytečné riziko. Navíc ti nic nepřidá, jen komplikuje. Nechápu, proč v jednom kroce streamuješ data do nového souboru, kam uložíš jen hlavičku a ve jiném teprve data. Postup je jednodušší než se dá. Prvně stáhneš data, pak je upravíš, nakonec (dohromady) zapíšeš.
+
+☝️chybí enumerate/zip, řádek 181. Pokud máš potřebu iterovat s pomocnou proměnnou přes víc sekvencí, zkus enumerate, příp. zip funkce. Zápis ti půjde rychleji přes prsty a současně se bude lépe číst.
+☝️strašně hárdkóděný a komplikovaný zápis, řádek 183-187. Tím, že ručně přepisuješ hárdkódované indexy, je kód delší a je jednodušší v něm udělat chybu. Na druhou stranu dávám palec nahoru za ty komentáře, které pěkně popisují, co který index představuje za hodnotu.
+
+❤️ pěkné docstrings
+
+ ~~~
+Prosím, nelekni se mých poznámek. Nejde o zásadní nedostatky, pouze doporučení, která ti mohou do budoucna pomoci a za které bych byl já sám moc rád, kdyby mi je tehdy někdo předal.
+
+Prosím, podruhé, pokud máš 2 minutky, ohodnoť můj přístup k hodnocení. Pokud se ti něco nelíbilo, nebo nesouhlasíš, dej mi to určitě vědět. Tady je link [4].
+
+Kdyby tě cokoliv zajímalo, neváhej mi napsat na Discordu.
+Zdraví tě a hodně úspěchu přeje, Matouš.
+
+[1] https://peps.python.org/pep-0008/#imports
+[2] https://peps.python.org/pep-0008/#blank-lines
+[3] https://peps.python.org/pep-0008/#maximum-line-length
+[4] https://forms.gle/u4rVR1gPUSwxNqDE6
