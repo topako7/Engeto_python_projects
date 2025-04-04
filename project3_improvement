@@ -1,0 +1,20 @@
+Hodnocení od lektora: SPLNĚNO
+
+Co se mi líbilo: feedback Discord:
++ pěkné docstrings,
+
+Co by jsi měl/a zlepšit: feedback Discord:
+- sekce knihoven, řádek 8,
+- chybí 2 prázdné řádky, řádek 13,
+- dlouhé řádky, řádek 22, 35, 38, ..
+- velké množství nepotřebných komentářů,
+- funkce "scrape_district" dělá víc než jednu činnost, řádek 49,
+- komplikovaný datový typ, řádek 84,
+- nejednotné docstrings,
+- chybí pokus raisnout status, řádek 66,
+- nestandardní řádkování, řádek 156, 157,
+- zkomolené workflow, řádek 165, 193,
+- chybí enumerate/zip, řádek 181,
+- strašně hárdkóděný a komplikovaný zápis, řádek 183-187,
+
+Závěr: Strohé hodnocení neprogramátora: projekt jsi úspěšně splnil. Dělal přesně to, co zadání ukládá. Pojďme se ale spolu podívat ještě na nějaké detaily. Jako seniorní vývojář jsem tam zahlédl pár věcí, o kterých by bylo fajn si povědět.
